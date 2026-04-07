@@ -21,6 +21,7 @@ class JnfSelectionProcess extends Model
     {
         return [
             'stages' => 'array',
+            'infrastructure_required' => 'array',
             'psychometric_test' => 'boolean',
             'medical_test' => 'boolean',
         ];

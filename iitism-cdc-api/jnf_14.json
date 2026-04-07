@@ -1,0 +1,201 @@
+{
+    "id": 14,
+    "company_id": 2,
+    "season": "2025-26",
+    "form_type": "JNF",
+    "status": "draft",
+    "submitted_at": null,
+    "reviewed_at": null,
+    "reviewed_by": null,
+    "review_comments": null,
+    "admin_notes": null,
+    "rejection_reason": null,
+    "version": 1,
+    "parent_form_id": null,
+    "created_at": "2026-04-06T12:47:48.000000Z",
+    "updated_at": "2026-04-06T13:59:01.000000Z",
+    "eligibility": {
+        "id": 1,
+        "jnf_id": 14,
+        "programmes": [
+            {
+                "course_id": "b.tech",
+                "branches": [
+                    {
+                        "branch_id": "m&c",
+                        "min_cgpa": null
+                    },
+                    {
+                        "branch_id": "cse",
+                        "min_cgpa": null
+                    }
+                ]
+            }
+        ],
+        "min_cgpa": null,
+        "backlogs_allowed": false,
+        "highschool_percent": null,
+        "gender_filter": "all",
+        "per_discipline_cgpa": [],
+        "special_requirements": null,
+        "created_at": "2026-04-06T14:20:28.000000Z",
+        "updated_at": "2026-04-06T14:20:28.000000Z"
+    },
+    "salary": {
+        "id": 1,
+        "jnf_id": 14,
+        "currency": "INR",
+        "salary_same_for_all": true,
+        "salary_data": [
+            {
+                "course_id": "B.Tech \/ Dual Degree \/ Int. M.Tech (UG group)",
+                "ctc": "8884",
+                "base": null,
+                "take_home": null,
+                "ug_ctc": null,
+                "pg_ctc": null
+            },
+            {
+                "course_id": "M.Tech \/ 3yr M.Tech",
+                "ctc": "84848",
+                "base": null,
+                "take_home": null,
+                "ug_ctc": null,
+                "pg_ctc": null
+            },
+            {
+                "course_id": "MBA \/ MBA (BA)",
+                "ctc": "848484",
+                "base": null,
+                "take_home": null,
+                "ug_ctc": null,
+                "pg_ctc": null
+            },
+            {
+                "course_id": "M.Sc \/ M.Sc.Tech",
+                "ctc": "84846",
+                "base": null,
+                "take_home": null,
+                "ug_ctc": null,
+                "pg_ctc": null
+            },
+            {
+                "course_id": "Ph.D",
+                "ctc": "84848",
+                "base": null,
+                "take_home": null,
+                "ug_ctc": null,
+                "pg_ctc": null
+            },
+            {
+                "course_id": "M.A. \/ PG Diploma",
+                "ctc": "84847",
+                "base": null,
+                "take_home": null,
+                "ug_ctc": null,
+                "pg_ctc": null
+            }
+        ],
+        "additional_components": {
+            "global": {
+                "joining_bonus": null,
+                "retention_bonus": null,
+                "variable_bonus": null,
+                "esops": null,
+                "esops_vesting": null,
+                "relocation_allowance": null,
+                "medical_allowance": null,
+                "deductions": null,
+                "bond_amount": null,
+                "bond_duration": null,
+                "first_yr_ctc": null,
+                "gross_salary": null,
+                "ctc_breakup_text": null,
+                "custom_components": []
+            },
+            "per_course": [],
+            "same_additional_for_all": true
+        },
+        "created_at": "2026-04-06T13:36:15.000000Z",
+        "updated_at": "2026-04-06T14:11:24.000000Z"
+    },
+    "selection_process": {
+        "id": 1,
+        "jnf_id": 14,
+        "stages": {
+            "ppt": {
+                "enabled": false,
+                "rounds": [
+                    {
+                        "mode": null,
+                        "duration": null
+                    }
+                ]
+            },
+            "resume_shortlisting": {
+                "enabled": false,
+                "rounds": [
+                    {
+                        "mode": null
+                    }
+                ]
+            },
+            "test": {
+                "enabled": true,
+                "rounds": [
+                    {
+                        "mode": "Online",
+                        "test_type": "Aptitude + Technical",
+                        "duration": "66"
+                    }
+                ]
+            },
+            "group_discussion": {
+                "enabled": false,
+                "rounds": [
+                    {
+                        "mode": null,
+                        "duration": null
+                    }
+                ]
+            },
+            "interview": {
+                "enabled": false,
+                "rounds": [
+                    {
+                        "mode": null,
+                        "interview_mode": null,
+                        "duration": null,
+                        "round_name": null
+                    }
+                ]
+            }
+        },
+        "infrastructure_required": {
+            "visit_team_size": "",
+            "rooms_required": "",
+            "special_infrastructure": ""
+        },
+        "psychometric_test": false,
+        "medical_test": false,
+        "other_screening": "0",
+        "created_at": "2026-04-06T14:01:07.000000Z",
+        "updated_at": "2026-04-06T14:21:11.000000Z"
+    },
+    "declaration": {
+        "id": 1,
+        "jnf_id": 14,
+        "aipc_agreed": true,
+        "shortlisting_agreed": true,
+        "info_verified": true,
+        "ranking_consent": true,
+        "accuracy_confirmed": true,
+        "rti_nirf_consent": true,
+        "signatory_name": "rohit ji garg aur nehmeet ji patel",
+        "signatory_designation": "hr's",
+        "signatory_date": "2026-04-06T00:00:00.000000Z",
+        "typed_signature": "Rohit",
+        "created_at": "2026-04-06T13:16:49.000000Z",
+        "updated_at": "2026-04-06T14:06:25.000000Z"
+    }
+}

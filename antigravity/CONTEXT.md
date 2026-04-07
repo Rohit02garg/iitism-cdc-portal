@@ -25,7 +25,7 @@
 - **react-hot-toast** `^2.6.0` (notifications/toasts)
 - **@mui/x-date-pickers** `^8.27.2` + **dayjs** `^1.11.20` (date fields)
 - **@hookform/resolvers** `^5.2.2` + **zod** `^4.3.6` (form validation)
-- **react-quill** `^2.0.0` (rich text editor for JD fields)
+- **MUI TextField** (multiline) for JD/Rich-text (React 19 compatible — replaces react-quill)
 - **@mui/icons-material** `^7.3.9`
 
 ### Backend (`c:\DBMS_PROJECT\iitism-cdc-api`)
@@ -56,121 +56,27 @@
 ## 3. Current Progress — What Has Been Done ✅
 
 ### Phase 1: Foundation — COMPLETE ✅
-
-**Backend (Laravel) — All migrations run, all models created:**
-
-| Table | Status |
-|-------|--------|
-| `users` | ✅ Created |
-| `companies` | ✅ Created |
-| `company_contacts` | ✅ Created |
-| `job_notification_forms` | ✅ Created |
-| `jnf_eligibility` | ✅ Created |
-| `jnf_job_profiles` | ✅ Created |
-| `jnf_salary` | ✅ Created |
-| `jnf_selection_process` | ✅ Created |
-| `jnf_declaration` | ✅ Created |
-| `notifications` | ✅ Created |
-| `form_audit_log` | ✅ Created |
-| `otp_verifications` | ✅ Created |
-| `personal_access_tokens` | ✅ Created (Sanctum) |
-| `cache` | ✅ Created |
-| `jobs` (queue) | ✅ Created |
-
-**Models created and confirmed:**
-- `User.php` — role (`company`/`admin`), `is_active`, `email_verified_at`
-- `Company.php` — all profile fields, `belongsTo(User)`, `hasMany(CompanyContact)`, `hasMany(JobNotificationForm)`
-- `CompanyContact.php`
-- `JobNotificationForm.php` — all relationships (`jobProfile`, `eligibility`, `salary`, `selectionProcess`, `declaration`, `auditLogs`)
-- `JnfJobProfile.php`
-- `JnfEligibility.php`
-- `JnfSalary.php`
-- `JnfSelectionProcess.php`
-- `JnfDeclaration.php`
-- `FormAuditLog.php`
-- `Notification.php`
-
-**Frontend (Next.js) — Foundation:**
-- Project at `c:\DBMS_PROJECT\iitism-cdc-frontend` using App Router
-- `src/theme/theme.ts` — MUI theme: primary `#1a237e` (navy), secondary `#b71c1c` (red), Inter font
-- `src/lib/api.ts` — Axios instance with Bearer token interceptor + 401 signOut
-- `src/lib/constants.ts` — DEPARTMENTS, BRANCHES, COURSES, ORG_TYPES, SECTORS, etc.
-- `src/components/Providers.tsx` — SessionProvider + ThemeProvider + Toaster wrapper
-- `src/app/layout.tsx` — AppRouterCacheProvider + Providers
-- `src/middleware.ts` — Route protection (admin/company roles, redirect to /login)
+(Migrations, Models, Essential Providers, theme, constants)
 
 ### Phase 2: Authentication & Registration — COMPLETE ✅
+- **Registration wizard** (3-step with OTP verification).
+- **Login Page** — Full split-panel UI with next-auth implementation; stores Sanctum tokens in localStorage.
+- **Middleware Integration** — Role-based protection for /dashboard, /jnf, /inf, /admin; honors `callbackUrl`.
+- **Dashboard API** — `DashboardController` in Laravel delivering real stats and submission history.
 
-**Backend — AuthController (`app/Http/Controllers/Api/AuthController.php`):**
-- `sendOtp()` — validates email, prevents duplicate, generates 6-digit OTP, queues `OtpEmail`, stores in `otp_verifications`
-- `verifyOtp()` — validates OTP + expiry (5 min), marks `is_used=true`
-- `register()` — validates all fields, creates `User` + `Company` + `CompanyContact` in DB transaction, queues `WelcomeEmail`, fires `CompanyRegistered` event
-- `login()` — Sanctum token with abilities `['role:admin']` or `['role:company']`
-- `logout()` — deletes current token
-- `me()` — returns user with company
-
-**Backend — Events & Listeners:**
-- `app/Events/CompanyRegistered.php` — holds `$company`
-- `app/Listeners/SendAdminNewCompanyAlert.php` — sends `AdminNewCompanyAlert` to `admin@iitism.ac.in`, creates DB notification
-
-**Backend — Mail classes:**
-- `app/Mail/OtpEmail.php` → `resources/views/emails/otp.blade.php`
-- `app/Mail/WelcomeEmail.php` → `resources/views/emails/welcome.blade.php`
-- `app/Mail/AdminNewCompanyEmail.php` → `resources/views/emails/admin_new_company.blade.php`
-
-**Backend — Routes (`routes/api.php`):**
-```
-GET  /api/health
-POST /api/auth/send-otp   (rate limited: 5/min)
-POST /api/auth/verify-otp
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/user            (auth:sanctum)
-POST /api/auth/logout     (auth:sanctum)
-GET  /api/auth/me         (auth:sanctum)
-```
-
-**Frontend — Registration wizard (`/register`):**
-- `src/app/(auth)/register/page.tsx` — 3-step wizard with MUI Stepper
-- `src/components/forms/shared/EmailVerificationStep.tsx` — Send OTP + countdown timer (5 min) + resend + verify
-- `src/components/forms/shared/RecruiterDetailsStep.tsx` — full_name, designation, mobile (+91 prefix), password (strength meter) + confirm
-- `src/components/forms/shared/CompanyProfileStep.tsx` — company_name, org_type (with HQ country/city if MNC), website, sector, nature_of_business, postal_address, date_of_establishment (DatePicker), annual_turnover, no_of_employees, industry_tags (chip input), social_media_url, description, logo upload (2MB max, preview)
-
-**Frontend — Auth:**
-- `src/app/api/auth/[...nextauth]/route.ts` — NextAuth CredentialsProvider calling `POST /api/auth/login`, JWT + session callbacks storing `role`, `accessToken`, `id`
-- `src/app/(auth)/login/page.tsx` — **stub only** (placeholder card, no actual form yet — NEEDS full implementation)
-
-**Frontend — Company Dashboard:**
-- `src/app/(company)/dashboard/page.tsx` — **stub only** (static cards with zeros — needs real API integration)
-
-### Known Issues / Incomplete Items in Phase 2:
-1. **Login page (`/login`)** — only a stub. Needs: full split-panel UI, react-hook-form, signIn(), role-based redirect
-2. **Forgot password** — backend methods not yet added to AuthController; frontend pages not created
-3. **Dashboard** — static zeros, needs `GET /api/company/dashboard` endpoint + real data
-4. **NextAuth NEXTAUTH_SECRET** — must be set in `.env.local`; currently using `next-auth@beta` which may have config differences
+### Phase 3: JNF & INF Portals — COMPLETE ✅
+- **JNF Form Shell** — 7-step stepper with 30s auto-save and real-time validation.
+- **JNF Sections 1-7** — Complete implementation (Profile, Contacts, Job Profile, Eligibility, Salary, Selection, Declaration).
+- **INF Form adaptation** — Reuses JNF sections with "Internship Profile" labeling and custom StipendSection.
+- **Backend Controllers** — `JnfController` and `InfController` with **deep validation** and **data mapping** logic (fixes 400/500 submission errors).
+- **Authorised Signatory** — Signatory preview with cursive font and AIPC guidelines checkbox.
+- **React 19 Fixes** — Replaced `react-quill` with MUI multiline `TextField` to avoid `findDOMNode` errors.
 
 ---
 
 ## 4. What Has NOT Been Done Yet ❌ (Pending)
 
-### Phase 2 — Remaining Items (Prompts 14-16):
-- [ ] **Prompt 14:** Full login page UI (split panel, react-hook-form, NextAuth signIn, role redirect)
-- [ ] **Prompt 15:** Forgot password + reset password (backend API + frontend pages)
-- [ ] **Prompt 16:** Company dashboard with real API data (stats, recent submissions, sidebar nav)
-
-### Phase 3 — JNF/INF Form (Prompts 17–24) — NOT STARTED:
-- [ ] **Prompt 17:** JNF form shell + stepper + auto-save architecture (`/jnf/new` page, `JnfFormShell.tsx`)
-- [ ] **Prompt 18:** JNF Section 1 (Company Profile read-only) + Section 2 (Contact & HR Details)
-- [ ] **Prompt 19:** JNF Section 3 (Job Profile) — title, designation, posting, skills, JD (react-quill), bond, PPO
-- [ ] **Prompt 20:** JNF Section 4 (Eligibility & Courses) — programme+branch grouped checkboxes, CGPA, backlogs
-- [ ] **Prompt 21:** JNF Section 5 (Salary Details) — CTC grid per programme, currency toggle, bonus fields
-- [ ] **Prompt 22:** JNF Section 6 (Selection Process) — stages, modes, types, durations, infrastructure
-- [ ] **Prompt 23:** JNF Section 7 (Declaration & Submit) — AIPC checkboxes, signatory, preview, submit
-- [ ] **Prompt 24:** INF form (same as JNF but Section 5 = Stipend Details)
-- [ ] **Backend JNF/INF controllers** — `JnfController` (create, show, saveDraft, submit, list)
-
-### Phase 4 — Admin Panel (Prompts 25–32) — NOT STARTED:
-- Admin page stubs exist in `src/app/(admin)/admin/` for: dashboard, companies, submissions, settings, notifications
+### Phase 4 — Admin Panel (Prompts 25–32):
 - [ ] **Prompt 25:** Admin layout + dashboard (sidebar nav, stats overview)
 - [ ] **Prompt 26:** Companies list (search, filter, approve/suspend)
 - [ ] **Prompt 27:** Submissions list (all JNFs/INFs, filter by status, season)
@@ -180,11 +86,16 @@ GET  /api/auth/me         (auth:sanctum)
 - [ ] **Prompt 31:** Resubmission flow + admin field editing with audit log
 - [ ] **Prompt 32:** PDF generation (barryvdh/laravel-dompdf) + version history
 
-### Phase 5 — Polish (Prompts 33–40) — NOT STARTED:
-- Public landing page, profile edit & completion guard, auto-save UX, mobile responsive, rate limiting, API Resources, seed data, .env files, SETUP.md
+### Phase 5 — Polish (Prompts 33–40):
+- [ ] **Prompt 33:** Public landing page (branding, stats, "For Recruiters", "For Students")
+- [ ] **Prompt 34:** Profile edit & completion guard (prompt if profile incomplete)
+- [ ] **Prompt 35:** Auto-save UX (visual indicator of "Saving..." and "Last saved at...")
+- [ ] **Prompt 36:** Rate limiting and advanced API validation
 
-### Phase 6 — Final (Prompts 41–48) — NOT STARTED:
-- Postman collection, TypeScript strict mode audit, company search/filter, form preview modal, notifications timeline, admin reporting, E2E test journey, cleanup + docs
+### Phase 6 — Final (Prompts 41–48):
+- [ ] **Prompt 41:** Postman collection and TypeScript strict mode audit
+- [ ] **Prompt 42:** Form preview modal (review full form before submit)
+- [ ] **Prompt 43:** Admin reporting exports (CSV/Excel for Superset)
 
 ---
 
@@ -263,6 +174,9 @@ GET  /api/auth/me         (auth:sanctum)
 ### `jnf_declaration`
 - `jnf_id`, `aipc_agreed`, `shortlisting_agreed`, `info_verified`, `ranking_consent`, `accuracy_confirmed`, `rti_nirf_consent` (all bool), `signatory_name`, `signatory_designation`, `signatory_date`, `typed_signature`
 
+### `jnf_contacts`
+- `jnf_id`, `data` (json containing all PoC details), `created_at`, `updated_at`.
+
 ### `otp_verifications`
 - `id`, `email`, `otp`, `expires_at`, `is_used`, `created_at`
 
@@ -336,60 +250,41 @@ c:\DBMS_PROJECT\
 │   └── src\
 │       ├── app\
 │       │   ├── (auth)\
-│       │   │   ├── login\page.tsx          ← STUB — needs full login UI
-│       │   │   └── register\page.tsx       ✅ 3-step wizard shell
+│       │   │   ├── login\page.tsx          ✅ Full UI + callbackUrl fix
+│       │   │   └── register\page.tsx       ✅ 3-step wizard
 │       │   ├── (company)\
-│       │   │   ├── dashboard\page.tsx      ← STUB — static zeros
-│       │   │   ├── jnf\
-│       │   │   │   ├── new\page.tsx        ← STUB — placeholder text
-│       │   │   │   └── [id]\              ← empty
-│       │   │   └── inf\                   ← empty
-│       │   ├── (admin)\
-│       │   │   └── admin\
-│       │   │       ├── companies\         ← STUB
-│       │   │       ├── dashboard\         ← STUB
-│       │   │       ├── notifications\     ← STUB
-│       │   │       ├── settings\          ← STUB
-│       │   │       └── submissions\       ← STUB
-│       │   ├── (public)\                  ← empty
-│       │   ├── api\auth\[...nextauth]\route.ts  ✅ NextAuth configured
-│       │   ├── layout.tsx                 ✅ AppRouterCacheProvider + Providers
-│       │   └── page.tsx                   (landing page stub)
+│       │   │   ├── dashboard\page.tsx      ✅ Integrated with DashboardClient
+│       │   │   ├── jnf\new\page.tsx        ✅ Renders JnfFormShell
+│       │   │   └── inf\new\page.tsx        ✅ Renders InfFormShell
 │       ├── components\
-│       │   ├── Providers.tsx              ✅ SessionProvider + ThemeProvider + Toaster
 │       │   ├── forms\
-│       │   │   ├── shared\
-│       │   │   │   ├── EmailVerificationStep.tsx    ✅
-│       │   │   │   ├── RecruiterDetailsStep.tsx     ✅
-│       │   │   │   └── CompanyProfileStep.tsx       ✅
-│       │   │   ├── jnf\index.ts           ← empty placeholder
-│       │   │   └── inf\index.ts           ← empty placeholder
-│       │   ├── layout\index.ts            ← empty
-│       │   ├── ui\                        ← empty
-│       │   └── admin\                     ← empty
+│       │   │   ├── jnf\
+│       │   │   │   ├── JnfFormShell.tsx    ✅ 7-step orchestration
+│       │   │   │   └── sections\           ✅ All 7 sections (CompanyProfile...Declaration)
+│       │   │   └── inf\
+│       │   │       ├── InfFormShell.tsx    ✅ INF specific orchestration
+│       │   │       └── sections\           ✅ StipendSection.tsx
 │       ├── lib\
-│       │   ├── api.ts                     ✅ Axios instance
-│       │   └── constants.ts               ✅ DEPARTMENTS, BRANCHES, COURSES, etc.
-│       ├── theme\theme.ts                 ✅ MUI theme config
-│       ├── types\                         ← needs population
-│       └── middleware.ts                  ✅ Route protection
+│       │   └── api.ts                     ✅ Axios instance + getSession interceptor
+│       ├── types\
+│       │   └── next-auth.d.ts             ✅ Augmented Session with accessToken
+│       └── middleware.ts                  ✅ CallbackUrl + JNF/INF bypass logic
 │
 └── iitism-cdc-api\
     ├── app\
     │   ├── Http\Controllers\Api\
-    │   │   └── AuthController.php         ✅ login, logout, me, sendOtp, verifyOtp, register
-    │   ├── Events\CompanyRegistered.php   ✅
-    │   ├── Listeners\SendAdminNewCompanyAlert.php  ✅
-    │   ├── Mail\OtpEmail.php             ✅
-    │   ├── Mail\WelcomeEmail.php         ✅
-    │   ├── Mail\AdminNewCompanyEmail.php  ✅
-    │   └── Models\                        ✅ all 11 models
-    ├── database\migrations\               ✅ 15 migrations
-    ├── routes\api.php                     ✅ 8 routes
-    └── resources\views\emails\
-        ├── otp.blade.php                  ✅
-        ├── welcome.blade.php              ✅
-        └── admin_new_company.blade.php    ✅
+    │   │   ├── AuthController.php         ✅ Login/Register/OTP
+    │   │   └── Company\
+    │       │   ├── DashboardController.php ✅ Stats & Submissions
+    │       │   ├── JnfController.php       ✅ JNF CRUD
+    │       │   ├── InfController.php       ✅ INF CRUD
+    │       │   └── ProfileController.php   ✅ Profile updates
+    │   ├── Models\                        ✅ All 11 models (User, Company, JNF...)
+    │   ├── Events\                        ✅ CompanyRegistered
+    │   ├── Listeners\                     ✅ SendAdminNewCompanyAlert
+    │   └── Mail\                          ✅ Otp, Welcome, AdminAlert templates
+    ├── routes\api.php                     ✅ All 8+ routes mapped
+    └── resources\views\emails\            ✅ All blade templates
 ```
 
 ---
@@ -502,12 +397,10 @@ npm run dev   # runs on http://localhost:3000
 
 ## 18. Next Immediate Steps (Priority Order)
 
-1. **Complete Login Page** (Prompt 14) — full split-panel UI with react-hook-form and NextAuth signIn
-2. **Forgot/Reset Password** (Prompt 15) — backend AuthController methods + frontend pages
-3. **Company Dashboard** (Prompt 16) — `DashboardController` in Laravel + real data in frontend
-4. **JNF Form Shell** (Prompt 17) — create draft on mount, 7-step sidebar stepper, auto-save
-5. **JNF Sections 1-7** (Prompts 18-23) — build sequentially
-6. **Admin Panel** (Prompts 25-32) — after JNF is working
+1. **Admin Layout & Dashboard** (Prompt 25) — Sidebar navigation and overview stats for CDC staff.
+2. **Companies Management** (Prompt 26) — Admin interface to approve or suspend companies.
+3. **Submissions List** (Prompt 27) — Filterable list of all JNF/INF forms for administrative review.
+4. **Form Review & Approval** (Prompt 28) — Multi-tab review page with action buttons (Approve/Reject).
 
 ---
 
@@ -515,19 +408,16 @@ npm run dev   # runs on http://localhost:3000
 
 | # | Phase | Description | Status |
 |---|-------|-------------|--------|
-| 1–6 | Foundation | Next.js init, Laravel init, all DB migrations | ✅ Done |
-| 7 | Foundation | All models + seeder | ✅ Done |
-| 8 | Foundation | NextAuth config + route protection | ✅ Done |
-| 9–10 | Auth | OTP API + email templates | ✅ Done |
-| 11–13 | Auth | Registration wizard (3 steps) | ✅ Done |
-| 14 | Auth | Login page | ❌ Stub only |
-| 15 | Auth | Forgot/reset password | ❌ Not started |
-| 16 | Auth | Company dashboard | ❌ Stub only |
-| 17–23 | JNF | JNF 7-section form | ❌ Not started |
-| 24 | INF | INF form variant | ❌ Not started |
-| 25–32 | Admin | Full admin panel | ❌ Not started |
-| 33–40 | Polish | UX, security, mobile | ❌ Not started |
-| 41–48 | Final | Testing, docs, build | ❌ Not started |
+| 1-13 | Foundation/Auth | Init, DB, next-auth, Register wizard | ✅ Done |
+| 14 | Auth | Login page | ✅ Done |
+| 15 | Auth | Forgot/reset password | ❌ Pending |
+| 16 | Auth | Company dashboard | ✅ Done |
+| 17-23 | JNF | JNF 7-section form wizard | ✅ Done |
+| 24 | INF | INF form variant + Stipend | ✅ Done |
+| 25-32 | Admin | Full admin panel | ❌ Not started |
+| 33-40 | Polish | UX, mobile, landing page | ❌ Not started |
+| 41-48 | Final | Testing, docs, build | ❌ Not started |
+| - | Fixes | React 19 compat, JNF/INF Data Mapping | ✅ Done |
 
 ---
 

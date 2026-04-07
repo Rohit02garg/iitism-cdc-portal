@@ -780,6 +780,7 @@ Show all validation errors inline under each field using helperText.
 
 ---
 
+
 ### PROMPT 13 — Registration Wizard — Step 3: Company Profile (Next.js)
 
 ```
@@ -861,6 +862,8 @@ All files .tsx, no any types, all fields typed.
 ```
 
 ---
+
+// completed till 13
 
 ### PROMPT 14 — Login Page (Next.js)
 
@@ -1329,6 +1332,8 @@ All .tsx, typed, responsive, no any.
 
 ---
 
+// completed till 19
+
 ### PROMPT 20 — JNF Section 4: Eligibility & Courses
 
 ```
@@ -1507,6 +1512,7 @@ All .tsx, typed. No any types.
 ```
 
 ---
+completed till 21
 
 ### PROMPT 22 — JNF Section 6: Selection Process
 
@@ -1589,6 +1595,8 @@ All .tsx, typed with SelectionStage interface. No any types.
 ```
 
 ---
+
+completed till 22
 
 ### PROMPT 23 — JNF Section 7: Declaration & Submit
 
@@ -1683,6 +1691,8 @@ All .tsx, typed, no any.
 
 ---
 
+completed till 23
+
 ### PROMPT 24 — INF Form (Internship Notification Form)
 
 ```
@@ -1768,6 +1778,8 @@ Verify ALL of the following before proceeding to Phase 4:
 
 If any check fails, fix it before continuing.
 ```
+
+completed till 24
 
 ---
 

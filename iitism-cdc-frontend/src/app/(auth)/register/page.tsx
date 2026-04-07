@@ -28,7 +28,17 @@ export default function RegisterPage() {
     } else if (stepIndex === 3) {
       setIsSubmitting(true);
       try {
-        await fetchApi.post('/auth/register', updatedData);
+        const formData = new FormData();
+        Object.entries(updatedData).forEach(([key, value]) => {
+          if (value === null || value === undefined || value === '') return;
+          if (key === 'industry_tags' && Array.isArray(value)) {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, value as string | Blob);
+          }
+        });
+
+        await fetchApi.post('/auth/register', formData);
         toast.success("Registration successful! Check your email for login credentials.");
         router.push('/login');
       } catch (error: any) {

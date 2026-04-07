@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use App\Mail\PasswordResetEmail;
+use App\Mail\PasswordResetConfirmationEmail;
 
 class AuthController extends Controller
 {
@@ -178,24 +181,19 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $sectors = [
-            'Information Technology (IT/ITES)',
+            'Information Technology',
+            'Core (Technical)',
+            'Finance / Banking',
             'Consulting',
-            'Finance & Banking (BFSI)',
-            'E-commerce',
-            'Core Engineering',
-            'Analytics & Data Science',
+            'Analytics',
             'Oil & Gas / Energy',
-            'Manufacturing',
-            'R&D',
+            'Mining / Minerals',
+            'Research & Development',
+            'FMCG / Retail',
             'Education / EdTech',
-            'Healthcare / Pharma / Biotech',
-            'PSU / Government',
-            'Construction / Infrastructure',
-            'Automobile',
-            'FMCG',
-            'Media / Advertising / PR',
-            'Logistics / Supply Chain',
-            'Others'
+            'Manufacturing',
+            'Public Sector',
+            'Other',
         ];
 
         $request->validate([
@@ -233,6 +231,13 @@ class AuthController extends Controller
             ]);
 
             // Create company
+            $logoPath = null;
+            if ($request->hasFile('logo')) {
+                $logoPath = $request->file('logo')->store('company_logos', 'public');
+            }
+
+            $industryTags = $request->industry_tags ? json_decode($request->industry_tags, true) : null;
+
             $company = Company::create([
                 'user_id' => $user->id,
                 'company_name' => $request->company_name,
@@ -240,6 +245,17 @@ class AuthController extends Controller
                 'sector' => $request->sector,
                 'org_type' => $request->org_type,
                 'postal_address' => $request->postal_address,
+                'nature_of_business' => $request->nature_of_business,
+                'date_of_establishment' => $request->date_of_establishment,
+                'annual_turnover' => $request->annual_turnover,
+                'no_of_employees' => $request->no_of_employees,
+                'hq_country' => $request->hq_country,
+                'hq_city' => $request->hq_city,
+                'industry_tags' => $industryTags,
+                'social_media_url' => $request->social_media_url,
+                'description' => $request->description,
+                'logo_path' => $logoPath,
+                'is_profile_complete' => true,
             ]);
 
             // Create primary contact (POC_1)
@@ -264,5 +280,93 @@ class AuthController extends Controller
                 'message' => 'Registration successful. Check your email for login details.',
             ], 201);
         });
+    }
+
+    /**
+     * Send a password reset link to the provided email.
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->email;
+        $user = User::where('email', $email)->first();
+
+        if ($user) {
+            $token = Str::random(64);
+
+            DB::table('password_reset_tokens')->updateOrInsert(
+                ['email' => $email],
+                ['token' => $token, 'created_at' => Carbon::now()]
+            );
+
+            Mail::to($email)->queue(new PasswordResetEmail($token, $email));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'If this email exists, a reset link has been sent.',
+        ]);
+    }
+
+    /**
+     * Reset the user's password.
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*?&]/',
+            ],
+        ]);
+
+        $resetRequest = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        // Check if token exists and is not older than 15 minutes
+        if (!$resetRequest || Carbon::parse($resetRequest->created_at)->addMinutes(15)->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired password reset token.',
+            ], 400);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        // Update password and clear sessions
+        $user->password = Hash::make($request->password);
+        $user->save();
+        $user->tokens()->delete();
+
+        // Clear reset token
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        // Send confirmation
+        Mail::to($user->email)->queue(new PasswordResetConfirmationEmail());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password reset successfully.',
+        ]);
     }
 }

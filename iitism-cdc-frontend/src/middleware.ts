@@ -9,9 +9,13 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!token;
   const userRole = token?.role as string | undefined;
 
-  // Auth pages: redirect logged-in users to their dashboard
+  // Auth pages: redirect logged-in users to their dashboard or callbackUrl
   if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
     if (isAuthenticated) {
+      const callback = request.nextUrl.searchParams.get('callbackUrl');
+      if (callback) {
+        return NextResponse.redirect(new URL(callback, request.url));
+      }
       if (userRole === 'admin') {
         return NextResponse.redirect(new URL('/admin/dashboard', request.url));
       }
@@ -30,12 +34,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Allow JNF and INF routes to be accessed (client-side auth will handle it)
+  if (pathname.startsWith('/jnf') || pathname.startsWith('/inf')) {
+    return NextResponse.next();
+  }
+
   // Company routes: require company role
-  if (
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/jnf') ||
-    pathname.startsWith('/inf')
-  ) {
+  if (pathname.startsWith('/dashboard')) {
     if (!isAuthenticated || userRole !== 'company') {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);

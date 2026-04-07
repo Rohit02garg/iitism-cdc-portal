@@ -28,9 +28,12 @@ const { handlers, auth } = NextAuth({
               accessToken: res.data.data.token,
             };
           }
-          return null;
-        } catch (error) {
-          return null;
+          throw new Error('Invalid credentials');
+        } catch (error: any) {
+          if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+          }
+          throw new Error('An error occurred during login.');
         }
       },
     }),
