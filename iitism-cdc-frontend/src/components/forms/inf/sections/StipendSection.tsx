@@ -62,11 +62,12 @@ interface StipendSectionProps {
 }
 
 const DEFAULT_COURSES = [
-  'B.Tech / Dual Degree / Int. M.Tech (UG group)',
-  'M.Tech / 3yr M.Tech',
-  'MBA / MBA (BA)',
-  'M.Sc / M.Sc.Tech',
-  'Ph.D'
+  'B.Tech / Int. M.Tech',
+  'M.Tech',
+  'MBA',
+  'M.Sc. Tech',
+  'M.Sc.',
+  'Ph.D.',
 ];
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
@@ -84,6 +85,7 @@ export default function StipendSection({
 }: StipendSectionProps) {
 
   const displayCourses = (selectedCourses && selectedCourses.length > 0) ? selectedCourses : DEFAULT_COURSES;
+  const noCoursesSelected = selectedCourses !== undefined && selectedCourses.length === 0;
 
   const initializeRows = <T extends { course_id: string }>(defaultArr: T[] | undefined, defaultFactory: (course: string) => T) => {
     if (defaultArr && defaultArr.length > 0) {
@@ -144,20 +146,33 @@ export default function StipendSection({
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" fontWeight={700} gutterBottom>
-          Stipend Details
-        </Typography>
+        <Typography variant="h5" fontWeight={700} gutterBottom>Stipend Details</Typography>
         <Typography variant="body2" color="text.secondary">
           Enter the monthly stipend breakdown and associated perks for interns.
         </Typography>
-        <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2, border: '1px solid #90caf9' }}>
-          <Typography variant="body2" color="primary.dark">
-            <strong>PPO Note:</strong> If PPO provision was selected in the Internship Profile section, eligible interns may receive a Pre-Placement Offer based on performance.
-          </Typography>
-        </Box>
+        {!noCoursesSelected && (
+          <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2, border: '1px solid #90caf9' }}>
+            <Typography variant="body2" color="primary.dark">
+              <strong>PPO Note:</strong> If PPO provision was selected in the Internship Profile section, eligible interns may receive a Pre-Placement Offer based on performance.
+            </Typography>
+          </Box>
+        )}
+        {noCoursesSelected && (
+          <Box sx={{ mt: 3, p: 3, bgcolor: '#fff5f5', borderRadius: 2, border: '1px solid #ffcdd2', display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+            <Typography variant="h5" color="error" sx={{ lineHeight: 1 }}>⚠</Typography>
+            <Box>
+              <Typography variant="body1" color="error" fontWeight={700} gutterBottom>No programmes selected</Typography>
+              <Typography variant="body2" color="error.dark">
+                Please go back to the <strong>Eligibility &amp; Courses</strong> section and select at least one eligible programme before filling in stipend details.
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Box>
 
-      {/* STIPEND TABLE */}
+      {!noCoursesSelected && (
+        <>
+
       <Card sx={{ mb: 4, borderRadius: 2, boxShadow: 1 }}>
         <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -290,6 +305,8 @@ export default function StipendSection({
           </Box>
         </CardContent>
       </Card>
+        </>
+      )}
     </Box>
   );
 }

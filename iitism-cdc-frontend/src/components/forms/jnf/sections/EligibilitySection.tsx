@@ -28,59 +28,91 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useForm, Controller } from 'react-hook-form';
-import { BRANCHES } from '@/lib/constants';
 
-// Based on the user prompt specifications
 const COURSE_GROUPS = [
   {
     groupName: 'UG Programmes (JEE Advanced)',
     courses: [
-      { id: 'b.tech', name: 'Bachelor of Technology — 4 years' },
-      { id: 'be', name: 'Bachelor of Engineering — 4 years' },
-      { id: 'dualdegree', name: 'Dual Degree — 5 years' },
-      { id: 'dualdegree_categoryA', name: 'Dual Degree Category A' },
-      { id: 'dualdegree_categoryB', name: 'Dual Degree Category B' },
-      { id: 'dualdegree_categoryC', name: 'Dual Degree Category C' },
-      { id: 'dualdegree_categoryC1', name: 'Dual Degree Category C1' },
-      { id: 'dualdegree_categoryC2', name: 'Dual Degree Category C2' },
-      { id: 'dualdegree_categoryD', name: 'Dual Degree Category D' },
-      { id: 'dd.b.tech', name: 'Dual Degree B.Tech with MBA — 5 years' },
-      { id: 'int.bsms', name: 'Integrated B.Sc + M.Sc — 5 years' },
-    ]
-  },
-  {
-    groupName: 'Integrated Programmes',
-    courses: [
-      { id: 'int.m.sc', name: 'Integrated M.Sc — 5 years' },
-      { id: 'int.m.tech', name: 'Integrated M.Tech — 5 years' },
-      { id: 'int.msc.tech', name: 'Integrated M.Sc.Tech — 5 years' },
+      { 
+        id: 'b.tech', 
+        name: 'Bachelor of Technology — 4 years',
+        branches: [
+          { id: 'che', name: 'Chemical Engineering' },
+          { id: 'ce', name: 'Civil Engineering' },
+          { id: 'cse', name: 'Computer Science and Engineering' },
+          { id: 'ee', name: 'Electrical Engineering' },
+          { id: 'ece', name: 'Electronics & Communication Engineering' },
+          { id: 'ep', name: 'Engineering Physics' },
+          { id: 'env', name: 'Environmental Engineering' },
+          { id: 'm&c', name: 'Mathematics and Computing' },
+          { id: 'mech', name: 'Mechanical Engineering' },
+          { id: 'm&me', name: 'Mineral & Metallurgical Engineering' },
+          { id: 'me', name: 'Mining Engineering' },
+          { id: 'mme', name: 'Mining Machinery Engineering' },
+          { id: 'pe', name: 'Petroleum Engineering' }
+        ]
+      },
+      {
+        id: 'int.m.tech',
+        name: 'Integrated Master of Technology — 5 years',
+        branches: [
+          { id: 'agl', name: 'Applied Geology' },
+          { id: 'agp', name: 'Applied Geophysics' }
+        ]
+      }
     ]
   },
   {
     groupName: 'PG Programmes (GATE/JAM/CAT)',
     courses: [
-      { id: 'm.tech', name: 'M.Tech — 2 years' },
-      { id: '3yrmtech', name: 'M.Tech 3 years' },
-      { id: 'm.sc', name: 'M.Sc — 2 years' },
-      { id: 'm.sc.tech', name: 'M.Sc.Tech — 3 years' },
-      { id: 'mba', name: 'MBA — 2 years' },
-      { id: 'mbaba', name: 'MBA Business Analytics — 2 years' },
-      { id: 'ma', name: 'M.A. — 2 years' },
-      { id: 'pgd', name: 'PG Diploma — 2 years' },
-    ]
-  },
-  {
-    groupName: 'Executive Programmes',
-    courses: [
-      { id: 'execmba', name: 'Executive MBA — 3 years' },
-      { id: '2execmtech', name: 'Executive M.Tech 2yr' },
-      { id: '3execmtech', name: 'Executive M.Tech 3yr' },
-    ]
-  },
-  {
-    groupName: 'Research Programmes',
-    courses: [
-      { id: 'jrf', name: 'Ph.D — 7 years' },
+      {
+        id: 'm.tech',
+        name: 'Master of Technology — 2 years',
+        branches: [
+          { id: 'che', name: 'Chemical Engineering' },
+          { id: 'ce', name: 'Civil Engineering' },
+          { id: 'comm', name: 'Communication & Signal Processing' },
+          { id: 'cse', name: 'Computer Science & Engineering' },
+          { id: 'da', name: 'Data Analytics' },
+          { id: 'eq', name: 'Earthquake Science & Engineering' },
+          { id: 'ee-pe', name: 'Electrical Engineering - Power Electronics & Electrical Drives' },
+          { id: 'env', name: 'Environmental Engineering' },
+          { id: 'fuel', name: 'Fuel and Energy Engineering' },
+          { id: 'geo', name: 'Geomatics' },
+          { id: 'iem', name: 'Industrial Engineering & Management' },
+          { id: 'md', name: 'Machine Design' },
+          { id: 'mfg', name: 'Manufacturing Engineering' },
+          { id: 'mme', name: 'Metallurgical Engineering' },
+          { id: 'me', name: 'Mining Engineering' },
+          { id: 'opt', name: 'Optical Communication & Integrated Photonics' },
+          { id: 'pe', name: 'Petroleum Engineering' },
+          { id: 'phm', name: 'Pharmaceutical Science & Engineering' },
+          { id: 'ps', name: 'Power System Engineering' },
+          { id: 'rf', name: 'RF & Microwave Engineering' },
+          { id: 'therm', name: 'Thermal Engineering' },
+          { id: 'tunnel', name: 'Tunneling and Underground Space Technology' },
+          { id: 'vlsi', name: 'VLSI Design' }
+        ]
+      },
+      {
+        id: 'mba',
+        name: 'Master of Business Administration — 2 years',
+        branches: [
+          { id: 'ba', name: 'Business Analytics' },
+          { id: 'fin', name: 'Finance' },
+          { id: 'hr', name: 'Human Resources' },
+          { id: 'mkt', name: 'Marketing' },
+          { id: 'ops', name: 'Operations' }
+        ]
+      },
+      {
+        id: 'msc.tech',
+        name: 'MSc Tech — 2 years',
+        branches: [
+          { id: 'agl', name: 'Applied Geology' },
+          { id: 'agp', name: 'Applied Geophysics' }
+        ]
+      }
     ]
   }
 ];
@@ -97,6 +129,10 @@ export interface SelectedCourse {
 
 export interface JnfEligibility {
   courses: SelectedCourse[];
+  hire_msc_jam: string;
+  msc_jam_departments: string[];
+  hire_phd: string;
+  phd_departments: string[];
   min_cgpa: string;
   backlogs_allowed: string;
   high_school_percentage?: string;
@@ -121,6 +157,10 @@ export default function EligibilitySection({
   const { control, watch, setValue, getValues, formState: { errors } } = useForm<JnfEligibility>({
     defaultValues: {
       courses: defaultValues?.courses || [],
+      hire_msc_jam: defaultValues?.hire_msc_jam ?? 'No',
+      msc_jam_departments: defaultValues?.msc_jam_departments || [],
+      hire_phd: defaultValues?.hire_phd ?? 'No',
+      phd_departments: defaultValues?.phd_departments || [],
       min_cgpa: defaultValues?.min_cgpa ?? '',
       backlogs_allowed: defaultValues?.backlogs_allowed ?? 'No',
       high_school_percentage: defaultValues?.high_school_percentage ?? '',
@@ -136,13 +176,11 @@ export default function EligibilitySection({
 
   const formValues = watch();
 
-  // Refs for unmount save
   const formValuesRef = useRef(formValues);
   formValuesRef.current = formValues;
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
 
-  // Save immediately on unmount
   useEffect(() => {
     return () => {
       onSaveRef.current('eligibility', formValuesRef.current);
@@ -208,7 +246,12 @@ export default function EligibilitySection({
     const courseIndex = newCourses.findIndex(c => c.course_id === courseId);
     if (courseIndex >= 0) {
       if (checked) {
-        newCourses[courseIndex].branches = BRANCHES.map(b => ({ branch_id: b.id, min_cgpa: '' }));
+        let allCourseBranches: { id: string }[] = [];
+        for (const grp of COURSE_GROUPS) {
+          const c = grp.courses.find(x => x.id === courseId);
+          if (c) { allCourseBranches = c.branches; break; }
+        }
+        newCourses[courseIndex].branches = allCourseBranches.map(b => ({ branch_id: b.id, min_cgpa: '' }));
       } else {
         newCourses[courseIndex].branches = [];
       }
@@ -218,7 +261,13 @@ export default function EligibilitySection({
 
   const areAllBranchesSelected = (courseId: string) => {
     const course = formValues.courses.find(c => c.course_id === courseId);
-    return course ? course.branches.length === BRANCHES.length : false;
+    if (!course) return false;
+    let expectedCount = 0;
+    for (const grp of COURSE_GROUPS) {
+      const c = grp.courses.find(x => x.id === courseId);
+      if (c) { expectedCount = c.branches.length; break; }
+    }
+    return expectedCount > 0 && course.branches.length === expectedCount;
   };
 
   const handleGroupSelectAll = (groupIndex: number, checked: boolean) => {
@@ -243,13 +292,38 @@ export default function EligibilitySection({
     return groupCourses.every(gc => formValues.courses.some(c => c.course_id === gc.id));
   };
 
-  // Flattened mapping for per-discipline CGPA
+  const handleMscJamDeptCheck = (dept: string, checked: boolean) => {
+    let current = [...formValues.msc_jam_departments];
+    if (checked) {
+      if (!current.includes(dept)) current.push(dept);
+    } else {
+      current = current.filter(d => d !== dept);
+    }
+    setValue('msc_jam_departments', current, { shouldDirty: true, shouldValidate: true });
+  };
+
+  const handlePhdDeptCheck = (dept: string, checked: boolean) => {
+    let current = [...formValues.phd_departments];
+    if (checked) {
+      if (!current.includes(dept)) current.push(dept);
+    } else {
+      current = current.filter(d => d !== dept);
+    }
+    setValue('phd_departments', current, { shouldDirty: true, shouldValidate: true });
+  };
+
   const getSelectedBranchesAcrossCourses = () => {
-    const map = new Map<string, string>(); // branch_id -> branch_name
+    const map = new Map<string, string>();
     formValues.courses.forEach(c => {
+      let courseDetails: any;
+      for (const grp of COURSE_GROUPS) {
+        const found = grp.courses.find(x => x.id === c.course_id);
+        if (found) { courseDetails = found; break; }
+      }
+      
       c.branches.forEach(b => {
         if (!map.has(b.branch_id)) {
-          const branchDetail = BRANCHES.find(br => br.id === b.branch_id);
+          const branchDetail = courseDetails?.branches.find((br: any) => br.id === b.branch_id);
           if (branchDetail) {
             map.set(b.branch_id, branchDetail.name);
           }
@@ -262,7 +336,6 @@ export default function EligibilitySection({
   const uniqueSelectedBranches = getSelectedBranchesAcrossCourses();
 
   const handleDisciplineCgpaChange = (branchId: string, val: string) => {
-    // Update this branch's CGPA inside all selected courses containing this branch
     let newCourses = [...formValues.courses];
     newCourses = newCourses.map(c => {
       const branches = c.branches.map(b => {
@@ -276,7 +349,6 @@ export default function EligibilitySection({
     setValue('courses', newCourses, { shouldDirty: true });
   };
 
-  // Helper to get current CGPA from any instance of this branch
   const getDisciplineCgpa = (branchId: string) => {
     for (const c of formValues.courses) {
       const b = c.branches.find(br => br.branch_id === branchId);
@@ -349,7 +421,7 @@ export default function EligibilitySection({
                       </FormGroup>
                       <Divider sx={{ mb: 2 }} />
                       <Grid container spacing={1}>
-                        {BRANCHES.map(branch => (
+                        {course.branches.map((branch) => (
                           <Grid item xs={12} sm={6} md={4} key={branch.id}>
                             <FormControlLabel
                               control={
@@ -370,6 +442,101 @@ export default function EligibilitySection({
               })}
             </Box>
           ))}
+        </CardContent>
+      </Card>
+
+      {/* M.Sc. JAM Question */}
+      <Card sx={{ mb: 4, borderRadius: 2, boxShadow: 1 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>
+            Additional Hiring Options
+          </Typography>
+          
+          <Typography variant="body1" fontWeight={500} gutterBottom>
+            Are you interested in Hiring a 2-Year M.Sc. Students admitted through JAM ? *
+          </Typography>
+          <Controller
+            name="hire_msc_jam"
+            control={control}
+            render={({ field }) => (
+              <RadioGroup row {...field} sx={{ mb: 2 }}>
+                <FormControlLabel value="Yes" control={<Radio color="primary" />} label="Yes" />
+                <FormControlLabel value="No" control={<Radio color="primary" />} label="No" />
+              </RadioGroup>
+            )}
+          />
+
+          {formValues.hire_msc_jam === 'Yes' && (
+            <Box sx={{ ml: 2, p: 2, bgcolor: '#f8f9fa', borderRadius: 2, border: '1px solid #eee', mb: 4 }}>
+              <Typography variant="body2" fontWeight={600} gutterBottom>
+                Please select department(s):
+              </Typography>
+              <Grid container columnSpacing={4} rowSpacing={1}>
+                {['Physics', 'Chemistry', 'Mathematics'].map(dept => (
+                  <Grid item xs={12} sm={6} lg={4} key={dept}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formValues.msc_jam_departments.includes(dept)}
+                          onChange={(e) => handleMscJamDeptCheck(dept, e.target.checked)}
+                          size="small"
+                        />
+                      }
+                      label={<Typography variant="body2">{dept}</Typography>}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
+          {/* Ph.D. GATE/NET Question */}
+          <Divider sx={{ my: 3 }} />
+          
+          <Typography variant="body1" fontWeight={500} gutterBottom>
+            Are you interested in Hiring a Ph.D. Students admitted through GATE/NET ? *
+          </Typography>
+          <Controller
+            name="hire_phd"
+            control={control}
+            render={({ field }) => (
+              <RadioGroup row {...field} sx={{ mb: 2 }}>
+                <FormControlLabel value="Yes" control={<Radio color="primary" />} label="Yes" />
+                <FormControlLabel value="No" control={<Radio color="primary" />} label="No" />
+              </RadioGroup>
+            )}
+          />
+
+          {formValues.hire_phd === 'Yes' && (
+            <Box sx={{ ml: 2, p: 2, bgcolor: '#f8f9fa', borderRadius: 2, border: '1px solid #eee' }}>
+              <Typography variant="body2" fontWeight={600} gutterBottom>
+                Please select department(s):
+              </Typography>
+              <Grid container columnSpacing={4} rowSpacing={1}>
+                {[
+                  'Applied Geophysics', 'Chemistry and Chemical Biology', 'Chemical Engineering', 
+                  'Civil Engineering', 'Computer Science & Engineering', 'Mathematics & Computing', 
+                  'Electrical Engineering', 'Electronics & Communication Engineering', 
+                  'Environmental Science & Engineering', 'Fuel, Minerals and Metallurgical Engineering', 
+                  'Mechanical Engineering', 'Management Studies', 'Mining Engineering', 'Petroleum Engineering'
+                ].map(dept => (
+                  <Grid item xs={12} md={6} key={dept}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formValues.phd_departments.includes(dept)}
+                          onChange={(e) => handlePhdDeptCheck(dept, e.target.checked)}
+                          size="small"
+                        />
+                      }
+                      label={<Typography variant="body2">{dept}</Typography>}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
         </CardContent>
       </Card>
 
