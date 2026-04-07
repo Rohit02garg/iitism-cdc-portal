@@ -61,14 +61,18 @@ function normalizeServerData(d: any): any {
     } : null,
     eligibility: d.eligibility ? {
       courses: d.eligibility.programmes ?? d.eligibility.courses ?? [],
+      hire_msc_jam: d.eligibility.hire_msc_jam ?? 'No',
+      msc_jam_departments: d.eligibility.msc_jam_departments ?? [],
+      hire_phd: d.eligibility.hire_phd ?? 'No',
+      phd_departments: d.eligibility.phd_departments ?? [],
       min_cgpa: d.eligibility.min_cgpa ?? '',
       backlogs_allowed: d.eligibility.backlogs_allowed === true ? 'Yes' : (d.eligibility.backlogs_allowed === false ? 'No' : (d.eligibility.backlogs_allowed ?? 'No')),
       high_school_percentage: d.eligibility.highschool_percent ?? d.eligibility.high_school_percentage ?? '',
       gender_filter: d.eligibility.gender_filter === 'male' ? 'Male Only'
-                   : d.eligibility.gender_filter === 'female' ? 'Female Only'
-                   : d.eligibility.gender_filter === 'other' ? 'Others Only'
-                   : d.eligibility.gender_filter === 'all' ? 'All Genders'
-                   : d.eligibility.gender_filter ?? 'All Genders',
+        : d.eligibility.gender_filter === 'female' ? 'Female Only'
+          : d.eligibility.gender_filter === 'other' ? 'Others Only'
+            : d.eligibility.gender_filter === 'all' ? 'All Genders'
+              : d.eligibility.gender_filter ?? 'All Genders',
       per_discipline_cgpa: d.eligibility.per_discipline_cgpa ?? [],
       special_requirements: d.eligibility.special_requirements ?? '',
     } : null,
@@ -204,6 +208,20 @@ export default function InfFormShell({ infId }: InfFormShellProps) {
 
   const allSectionsComplete = [0, 1, 2, 3, 4, 5].every(i => completed[i]);
 
+  const getSelectedCourses = (): string[] | undefined => {
+    if (!formData?.eligibility) return undefined;
+    const displayList: string[] = [];
+    const ids: string[] = (formData.eligibility.courses || []).map((c: { course_id: string }) => c.course_id);
+    if (ids.includes('b.tech') || ids.includes('int.m.tech')) displayList.push('B.Tech / Int. M.Tech');
+    if (ids.includes('m.tech'))   displayList.push('M.Tech');
+    if (ids.includes('mba'))      displayList.push('MBA');
+    if (ids.includes('msc.tech')) displayList.push('M.Sc. Tech');
+    if (formData.eligibility.hire_msc_jam === 'Yes') displayList.push('M.Sc.');
+    if (formData.eligibility.hire_phd === 'Yes')     displayList.push('Ph.D.');
+    // eligibility saved but nothing selected → return [] to trigger warning in Stipend section
+    return displayList;
+  };
+
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 10 }}><CircularProgress /></Box>;
 
   const renderSection = (stepIndex: number) => {
@@ -217,7 +235,7 @@ export default function InfFormShell({ infId }: InfFormShellProps) {
       case 3:
         return <EligibilitySection jnfId={infId} onSave={handleSave} onComplete={(c) => handleComplete(3, c)} defaultValues={formData?.eligibility} />;
       case 4:
-        return <StipendSection jnfId={infId} onSave={handleSave} onComplete={(c) => handleComplete(4, c)} defaultValues={formData?.salary} />;
+        return <StipendSection jnfId={infId} onSave={handleSave} onComplete={(c) => handleComplete(4, c)} defaultValues={formData?.salary} selectedCourses={getSelectedCourses()} />;
       case 5:
         return <SelectionProcessSection jnfId={infId} onSave={handleSave} onComplete={(c) => handleComplete(5, c)} defaultValues={formData?.selection_process} />;
       case 6:

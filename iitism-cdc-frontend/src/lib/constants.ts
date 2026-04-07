@@ -25,26 +25,19 @@ export const DEPARTMENTS = [
 ];
 
 export const BRANCHES = [
-  { id: 'agl', name: 'Applied Geology' },
-  { id: 'agp', name: 'Applied Geophysics' },
-  { id: 'phy', name: 'Physics' },
-  { id: 'chem', name: 'Chemistry' },
-  { id: 'civ', name: 'Civil Engineering' },
+  { id: 'che', name: 'Chemical Engineering' },
+  { id: 'ce', name: 'Civil Engineering' },
   { id: 'cse', name: 'Computer Science and Engineering' },
-  { id: 'cse+cse', name: 'CSE + CSE (Dual)' },
-  { id: 'ece', name: 'Electronics and Communication Engineering' },
   { id: 'ee', name: 'Electrical Engineering' },
-  { id: 'eg', name: 'Engineering Geology' },
-  { id: 'env', name: 'Environmental Engineering' },
+  { id: 'ece', name: 'Electronics & Communication Engineering' },
   { id: 'ep', name: 'Engineering Physics' },
+  { id: 'env', name: 'Environmental Engineering' },
   { id: 'm&c', name: 'Mathematics and Computing' },
-  { id: 'mba', name: 'Master of Business Administration' },
-  { id: 'me', name: 'Mining Engineering' },
   { id: 'mech', name: 'Mechanical Engineering' },
+  { id: 'm&me', name: 'Mineral & Metallurgical Engineering' },
+  { id: 'me', name: 'Mining Engineering' },
+  { id: 'mme', name: 'Mining Machinery Engineering' },
   { id: 'pe', name: 'Petroleum Engineering' },
-  { id: 'phd', name: 'Doctor of Philosophy' },
-  { id: 'da', name: 'Data Analytics' },
-  { id: 'ce', name: 'Chemical Engineering' },
 ];
 
 export const COURSES = [
